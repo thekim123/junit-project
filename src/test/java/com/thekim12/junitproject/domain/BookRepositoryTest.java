@@ -1,45 +1,81 @@
 package com.thekim12.junitproject.domain;
 
-
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Equals;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 @DataJpaTest
 public class BookRepositoryTest {
 
-    @Autowired  // 테스트할 때는 @autowired로 di하는게 좋다.
-    private BookRepository bookRepository;
+	@Autowired // 테스트할 때는 @autowired로 di하는게 좋다.
+	private BookRepository bookRepository;
 
-    // 1. 책 등록
-    @Test
-    public void 책등록_test(){
-        // given ( 데이터 준비 )
-        String title = "junit5";
-        String author = "thekim12";
+	@BeforeAll 		// 테스트 시작 전에 한번만 실행
+	@BeforeEach	// 각 테스트 시작 전에 한번씩 실행
+	public void 데이터준비() {
+		String title = "junit";
+		String author = "momo";
 
-        Book book = Book.builder()
-                .title(title)
-                .author(author)
-                .build();
+		Book book = Book.builder().title(title).author(author).build();
+		bookRepository.save(book);
+	}
 
-        // when ( 테스트 실행 )
-        Book bookPersistence = bookRepository.save(book);
+	// 1. 책 등록
+	@Test
+	public void 책등록_test() {
+		// given ( 데이터 준비 )
+		String title = "junit5";
+		String author = "thekim12";
 
-        // then ( 검증 )
-        assertEquals(title, bookPersistence.getTitle());
-        assertEquals(author, bookPersistence.getAuthor());
-    }
+		Book book = Book.builder().title(title).author(author).build();
 
-    // 2. 책 목록보기
+		// when ( 테스트 실행 )
+		Book bookPersistence = bookRepository.save(book);
 
-    // 3. 책 한권보기
+		// then ( 검증 )
+		assertEquals(title, bookPersistence.getTitle());
+		assertEquals(author, bookPersistence.getAuthor());
+	} // 트랜잭션 종료(저장된 데이터를 초기화함)
 
-    // 4. 책 수정
+	// 2. 책 목록보기
+	@Test
+	public void 책목록보기_test() {
+		// given - 줄 데이터 없음
+		String title = "junit";
+		String author = "momo";
 
-    // 5. 책 삭제
+		// when
+		List<Book> bookPersistence = bookRepository.findAll();
+
+		// then
+		assertEquals(title, bookPersistence.get(0).getTitle());
+		assertEquals(author, bookPersistence.get(0).getAuthor());
+
+	}
+
+	// 3. 책 한권보기
+	@Test
+	public void 책한건보기_test() {
+		// given
+		String title = "junit";
+		String author = "momo";
+
+		// when
+		Book bookPersistence = bookRepository.findById(1L).get();
+
+		// then
+		assertEquals(title, bookPersistence.getTitle());
+		assertEquals(author, bookPersistence.getAuthor());
+	}
+
+	// 4. 책 수정
+
+	// 5. 책 삭제
 
 }
