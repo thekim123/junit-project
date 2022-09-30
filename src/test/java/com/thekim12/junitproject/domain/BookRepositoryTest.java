@@ -1,23 +1,23 @@
 package com.thekim12.junitproject.domain;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @DataJpaTest
 public class BookRepositoryTest {
 
-	@Autowired // 테스트할 때는 @autowired로 di하는게 좋다.
+	@Autowired // 테스트할 때는 @autowired로 DI하는게 좋다.
 	private BookRepository bookRepository;
 
-	@BeforeAll 		// 테스트 시작 전에 한번만 실행
-	@BeforeEach	// 각 테스트 시작 전에 한번씩 실행
+	@BeforeEach // 각 테스트 시작 전에 한번씩 실행
 	public void 데이터준비() {
 		String title = "junit";
 		String author = "momo";
@@ -60,6 +60,7 @@ public class BookRepositoryTest {
 	}
 
 	// 3. 책 한권보기
+	@Sql("classpath:db/tableInit.sql")
 	@Test
 	public void 책한건보기_test() {
 		// given
@@ -74,8 +75,20 @@ public class BookRepositoryTest {
 		assertEquals(author, bookPersistence.getAuthor());
 	}
 
-	// 4. 책 수정
+	// 4. 책 삭제
+	@Sql("classpath:db/tableInit.sql")
+	@Test
+	public void 책삭제_test() {
+		// given
+		Long id = 1L;
 
-	// 5. 책 삭제
+		// when
+		bookRepository.deleteById(id);
+
+		// then
+		assertFalse( bookRepository.findById(id).isPresent());
+	}
+
+	// 5. 책 수정
 
 }
