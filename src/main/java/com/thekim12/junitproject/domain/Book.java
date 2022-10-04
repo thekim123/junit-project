@@ -11,20 +11,25 @@ import javax.persistence.*;
 @Entity
 public class Book {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false, length = 50)
-    private String title;
+	@Column(nullable = false, length = 50)
+	private String title;
 
-    @Column(nullable = false, length = 50)
-    private String author;
+	@Column(nullable = false, length = 50)
+	private String author;
 
-    @Builder
-    public Book(Long id, String title, String author) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-    }
+	@Builder
+	public Book(Long id, String title, String author) {
+		this.id = id;
+		this.title = title;
+		this.author = author;
+	}
+
+	public void update(String title, String author) {
+		this.title = title;
+		this.author = author;
+	}
 }
