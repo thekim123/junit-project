@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thekim12.junitproject.domain.Book;
 import com.thekim12.junitproject.domain.BookRepository;
+import com.thekim12.junitproject.util.MailSender;
 import com.thekim12.junitproject.web.dto.BookRespDto;
 import com.thekim12.junitproject.web.dto.BookSaveReqDto;
 
@@ -18,11 +19,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookService {
 	private final BookRepository bookRepository;
-
+	private final MailSender mailSender;
+	
 	// 1. 책등록
 	@Transactional(rollbackFor = RuntimeException.class)
 	public BookRespDto 책등록하기(BookSaveReqDto dto) {
 		Book bookPS = bookRepository.save(dto.toEntity());
+		if(bookPS != null) {
+			if(!mailSender.send()) {
+				throw new RuntimeException("메일이 전송되지 않았습니다.");
+			}
+		}
 		return new BookRespDto().toDto(bookPS);
 	}
 
